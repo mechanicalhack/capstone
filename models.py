@@ -3,9 +3,8 @@ from sqlalchemy import Column, String, create_engine, DateTime, Integer
 from flask_sqlalchemy import SQLAlchemy
 import json
 
-database_filename = "database.db"
-project_dir = os.path.dirname(os.path.abspath(__file__))
-database_path = "sqlite:///{}".format(os.path.join(project_dir, database_filename))
+database_name = "casting_agency"
+database_path = "postgres://{}/{}".format('localhost:5432', database_name)
 
 db = SQLAlchemy()
 
@@ -35,6 +34,17 @@ class Movies(db.Model):
             'title': self.title,
             'releaseDate': self.releaseDate
         }
+    
+    def insert(self):
+        db.session.add(self)
+        db.session.commit()
+    
+    def delete(self):
+        db.session.delete(self)
+        db.session.commit()
+    
+    def update(self):
+        db.session.commit()
 
 '''
 Actors with attributes name, age and gender
@@ -60,7 +70,7 @@ class Actors(db.Model):
 
     def insert(self):
         db.session.add(self)
-        db.sesstion.commit()
+        db.session.commit()
     
     def delete(self):
         db.session.delete(self)
