@@ -26,3 +26,6 @@ flask run --reload
 ```
 
 The `--reload` flag will detect file changes and restart the server automatically.
+
+## Resources used to make this site
+I found how to import environment variables at the following site https://able.bio/rhett/how-to-set-and-get-environment-variables-in-python--274rgt5
