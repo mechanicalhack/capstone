@@ -22,7 +22,7 @@ Movies with attributes title and release date
 class Movies(db.Model):
     id = Column(Integer, primary_key=True)
     title = Column(String)
-    releaseDate = DateTime
+    releaseDate = Column(DateTime)
 
     def __init__(self, title, releaseDate):
         self.title = title
