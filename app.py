@@ -32,6 +32,7 @@ def create_app(test_config=None):
     })
 
   @app.route('/movies')
+  @requires_auth('get:movies')
   def get_all_movies(payload):
     all_movies_query = Movies.query.all()
     all_movies = []
@@ -51,7 +52,7 @@ def create_app(test_config=None):
   # DELETE /actors/ and /movies/
   @app.route('/actors/<int:id>', methods=['DELETE'])
   @requires_auth('delete:actors')
-  def delete_actor(id):
+  def delete_actor(payload, id):
     try:
       actor_to_delete = Actors.query.get(id)
     except:
@@ -69,7 +70,8 @@ def create_app(test_config=None):
       abort(422)
 
   @app.route('/movies/<int:id>', methods=['DELETE'])
-  def delete_movie(id):
+  @requires_auth('delete:movies')
+  def delete_movie(payload, id):
     
     try:
       movie_to_delete = Movies.query.get(id)
@@ -90,7 +92,7 @@ def create_app(test_config=None):
   # POST /actors and /movies
   @app.route('/actors', methods=['POST'])
   @requires_auth('post:actors')
-  def add_actor():
+  def add_actor(payload):
     new_actor_info = request.get_json()
 
     if(new_actor_info is None):
@@ -103,7 +105,7 @@ def create_app(test_config=None):
     try:
       new_actor = Actors(name = name, age = age, gender = gender)
       new_actor.insert()
-
+      
       return jsonify({
         'success': True,
         'actor': new_actor_info
@@ -113,7 +115,8 @@ def create_app(test_config=None):
       abort(422)
 
   @app.route('/movies', methods=['POST'])
-  def add_movie():
+  @requires_auth('post:movies')
+  def add_movie(payload):
     new_movie_info = request.get_json()
 
     if(new_movie_info is None):
@@ -138,7 +141,7 @@ def create_app(test_config=None):
   # PATCH /actors/ and /movies/
   @app.route('/actors/<int:id>', methods=['PATCH'])
   @requires_auth('patch:actors')
-  def edit_actor(id):
+  def edit_actor(payload, id):
     
     edit_actor_info = request.get_json()
 
@@ -180,8 +183,9 @@ def create_app(test_config=None):
     except:
       abort(422)
 
-  @app.route('/movies', methods=['PATCH'])
-  def edit_movie():
+  @app.route('/movies/<int:id>', methods=['PATCH'])
+  @requires_auth('patch:movies')
+  def edit_movie(payload, id):
     
     edit_movie_info = request.get_json()
 
