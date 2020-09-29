@@ -24,7 +24,7 @@ def create_app(test_config=None):
         'name': actor.name,
         'age': actor.age,
         'gender': actor.gender
-      })
+      })      
 
     return jsonify({
       'success': True,
