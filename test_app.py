@@ -47,6 +47,12 @@ class CastingAgencyTest(unittest.TestCase):
         self.assertEqual(data['success'],True)
         self.assertEqual(data['actor']['name'], 'Randy Law')
 
+    def test_post_actor_with_no_json(self):
+
+        res = self.client().post('/actors', headers=self.__class__.executive_producer_auth_header)
+
+        self.assertEqual(res.status_code, 422)
+
     def test_post_movie(self):
 
         res = self.client().post('/movies', headers=self.__class__.executive_producer_auth_header, json={'title': 'The Land of Fire', 'releaseDate':'11-24-65'})
@@ -56,6 +62,12 @@ class CastingAgencyTest(unittest.TestCase):
         self.assertEqual(res.status_code, 200)
         self.assertEqual(data['success'],True)
         self.assertEqual(data['movie']['title'], 'The Land of Fire')
+
+    def test_post_movie_with_no_json(self):
+
+        res = self.client().post('/movies', headers=self.__class__.executive_producer_auth_header)
+
+        self.assertEqual(res.status_code, 422)
 
     def test_get_actors(self):
 
@@ -71,8 +83,6 @@ class CastingAgencyTest(unittest.TestCase):
 
         res = self.client().get('/actors', headers=self.__class__.no_auth_header)
 
-        data = json.loads(res.data)
-
         self.assertEqual(res.status_code, 401)
 
     def test_get_movies(self):
@@ -84,6 +94,12 @@ class CastingAgencyTest(unittest.TestCase):
         self.assertEqual(res.status_code, 200)
         self.assertEqual(data['success'],True)
         self.assertTrue(data['movies'])
+
+    def test_get_movies_without_access(self):
+
+        res = self.client().get('/movies', headers=self.__class__.no_auth_header)
+
+        self.assertEqual(res.status_code, 401)
     
     def test_patch_actor(self):
 
@@ -95,6 +111,12 @@ class CastingAgencyTest(unittest.TestCase):
         self.assertEqual(data['success'],True)
         self.assertEqual(data['actor']['age'], 30)
 
+    def test_patch_actor_with_incorrect_id(self):
+
+        res = self.client().patch('/actors/10', headers=self.__class__.casting_director_auth_header, json={'name': 'Randy Smith', 'age': 30, 'gender': 'Male'})
+
+        self.assertEqual(res.status_code, 422)
+
     def test_patch_movie(self):
 
         res = self.client().patch('/movies/2', headers=self.__class__.executive_producer_auth_header, json={'title': 'The Land of Fear'})
@@ -105,6 +127,12 @@ class CastingAgencyTest(unittest.TestCase):
         self.assertEqual(data['success'],True)
         self.assertEqual(data['movie']['title'], 'The Land of Fear')
     
+    def test_patch_movie_with_incorrect_id(self):
+
+        res = self.client().patch('/movies/10', headers=self.__class__.executive_producer_auth_header, json={'title': 'The Land of Joy'})
+        
+        self.assertEqual(res.status_code, 422)
+    
     def test_delete_actor(self):
 
         res = self.client().delete('/actors/3', headers=self.__class__.casting_director_auth_header)
@@ -114,6 +142,12 @@ class CastingAgencyTest(unittest.TestCase):
         self.assertEqual(res.status_code, 200)
         self.assertEqual(data['success'],True)
         self.assertEqual(data['delete'], 3)
+    
+    def test_delete_actor_with_incorrect_id(self):
+
+        res = self.client().delete('/actors/10', headers=self.__class__.casting_director_auth_header)
+
+        self.assertEqual(res.status_code, 422)
 
     def test_delete_movie(self):
 
@@ -124,11 +158,12 @@ class CastingAgencyTest(unittest.TestCase):
         self.assertEqual(res.status_code, 200)
         self.assertEqual(data['success'],True)
         self.assertEqual(data['delete'], 1)
+    
+    def test_delete_movie_with_incorrect_id(self):
 
-# Tests:
-# One test for success behavior of each endpoint
-# One test for error behavior of each endpoint
-# done # At least two tests of RBAC for each role
+        res = self.client().delete('/movies/10', headers=self.__class__.executive_producer_auth_header)
+
+        self.assertEqual(res.status_code, 422)
 
 if __name__ == "__main__":
     unittest.main()
