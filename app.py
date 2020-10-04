@@ -40,7 +40,7 @@ def create_app(test_config=None):
       all_movies.append({
         'id': movie.id,
         'title': movie.title,
-        'releaseDate': movie.releaseDate,
+        'releaseDate': movie.releaseDate
       })
     
     return jsonify({
@@ -182,17 +182,17 @@ def create_app(test_config=None):
       })
     except:
       abort(422)
-
+  
   @app.route('/movies/<int:id>', methods=['PATCH'])
   @requires_auth('patch:movies')
   def edit_movie(payload, id):
-    
+
     edit_movie_info = request.get_json()
 
     if not edit_movie_info:
       abort(422)
-
-    title = edit_movie_info.get('name')
+    
+    title = edit_movie_info.get('title')
     releaseDate = edit_movie_info.get('releaseDate')
 
     try:
@@ -206,20 +206,24 @@ def create_app(test_config=None):
 
       if releaseDate:
         edit_movie_query.releaseDate = releaseDate
-
+    
       edit_movie_query.update()
 
       edited_movie = {
-        'title': edit_movie_query.id,
-        'releaseDate': edit_movie_query.releaseDate,
+        'id': edit_movie_query.id,
+        'title': edit_movie_query.title,
+        'releaseDate': edit_movie_query.releaseDate
       }
 
       return jsonify({
         "success": True,
-        "actor": edited_movie
+        "movie": edited_movie
       })
     except:
       abort(422)
+
+    
+  
   #Error Handling
 
   @app.errorhandler(422)
